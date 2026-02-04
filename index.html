@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Will you be my valentine?</title>
+  <style>
+    :root{
+      --bg:#06060a;
+      --bg2:#0b0b12;
+      --ink:#f5f5ff;
+      --muted:#c8c8e6;
+      --pink:#ff2aa1;
+      --pink2:#ff67c7;
+      --cyan:#39f5ff;
+      --card: rgba(20, 20, 30, .70);
+      --stroke: rgba(255,255,255,.10);
+      --shadow: 0 24px 70px rgba(0,0,0,.55);
+      --radius: 22px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family:var(--font);
+      color:var(--ink);
+      background:
+        radial-gradient(900px 520px at 15% 20%, rgba(255,42,161,.18), transparent 62%),
+        radial-gradient(900px 540px at 85% 25%, rgba(57,245,255,.14), transparent 62%),
+        radial-gradient(1200px 700px at 50% 115%, rgba(255,103,199, .10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow:hidden;
+    }
+
+    /* “Scene/emo” sticker-like background */
+    .sparkleGrid{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.35;
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,.16) 1px, transparent 0);
+      background-size: 18px 18px;
+      mix-blend-mode: screen;
+      filter: blur(.2px);
+    }
+
+    /* Floating stars + broken hearts */
+    .floaters{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+    .floater{
+      position:absolute;
+      opacity:.75;
+      animation: rise linear infinite;
+      filter: drop-shadow(0 10px 12px rgba(255,42,161,.18));
+      user-select:none;
+      will-change: transform, opacity;
+    }
+    @keyframes rise{
+      from{ transform: translateY(110vh) rotate(0deg) scale(.9); opacity:0; }
+      10%{ opacity:.9; }
+      to{ transform: translateY(-20vh) rotate(220deg) scale(1.05); opacity:0; }
+    }
+
+    .wrap{
+      width:min(980px, 93vw);
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* top glow strip */
+    .wrap::before{
+      content:"";
+      position:absolute; left:-20%; right:-20%; top:-40%;
+      height: 240px;
+      background: radial-gradient(circle at 50% 50%, rgba(255,42,161,.22), transparent 60%);
+      transform: rotate(-6deg);
+      pointer-events:none;
+    }
+
+    header{
+      padding: 22px 22px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background: linear-gradient(90deg, var(--pink), var(--cyan));
+      box-shadow: 0 0 0 6px rgba(255,42,161,.14);
+    }
+
+    .badgeRight{
+      font-size: 12px;
+      color: var(--muted);
+      opacity:.95;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      white-space:nowrap;
+    }
+
+    .content{
+      padding: 14px 22px 22px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+    @media (max-width: 860px){
+      .content{ grid-template-columns:1fr; }
+    }
+
+    h1{
+      margin: 10px 0 10px;
+      font-size: clamp(30px, 4.6vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -1px;
+      text-transform: lowercase;
+    }
+    .neon{
+      background: linear-gradient(90deg, var(--pink), var(--pink2), var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 10px 25px rgba(255,42,161,.22));
+    }
+
+    .sub{
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .note{
+      padding: 14px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px dashed rgba(255,255,255,.16);
+      color: rgba(245,245,255,.92);
+    }
+    .note b{ color: var(--ink); }
+    .tiny{
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(200,200,230,.85);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+
+    .panel{
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(500px 250px at 30% 20%, rgba(255,42,161,.20), transparent 60%),
+        radial-gradient(500px 250px at 70% 45%, rgba(57,245,255,.14), transparent 60%),
+        rgba(0,0,0,.18);
+      padding: 16px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .photo{
+      width:100%;
+      aspect-ratio: 4/3;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+        repeating-linear-gradient(45deg, rgba(255,42,161,.10) 0 6px, rgba(57,245,255,.06) 6px 12px);
+      display:grid;
+      place-items:center;
+      text-align:center;
+      color: rgba(245,245,255,.88);
+      padding: 12px;
+    }
+    .photo small{ display:block; opacity:.8; margin-top:6px; color: rgba(200,200,230,.85); }
+
+    .actions{
+      position:relative;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 16px;
+      padding-top: 4px;
+      min-height: 60px; /* reserve space for the moving "No" */
+    }
+
+    button{
+      border:0;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      font-size: 16px;
+      letter-spacing:.2px;
+      user-select:none;
+    }
+
+    #yesBtn{
+      color:#0b0b12;
+      background: linear-gradient(90deg, var(--pink), var(--pink2));
+      box-shadow: 0 18px 40px rgba(255,42,161,.22);
+    }
+    #yesBtn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+    #noBtn{
+      color: rgba(245,245,255,.92);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      position: relative;
+    }
+    #noBtn:hover{ transform: translateY(-1px); }
+
+    footer{
+      padding: 0 22px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color: rgba(200,200,230,.85);
+      font-size: 12px;
+      opacity:.95;
+    }
+    .toggle{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .toggle input{ transform: translateY(1px); }
+
+    /* Modal */
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.55);
+      padding: 18px;
+    }
+    .modal.open{ display:grid; }
+    .modalCard{
+      width:min(660px, 94vw);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(700px 320px at 30% 20%, rgba(255,42,161,.22), transparent 60%),
+        radial-gradient(700px 320px at 70% 40%, rgba(57,245,255,.14), transparent 60%),
+        rgba(10,10,16,.92);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      text-align:center;
+    }
+    .big{
+      font-size: 46px;
+      margin: 6px 0 8px;
+      filter: drop-shadow(0 18px 30px rgba(255,42,161,.18));
+    }
+    .modalCard h2{ margin: 0 0 10px; }
+    .modalCard p{ margin:0 0 14px; line-height:1.6; color: rgba(245,245,255,.92); }
+    .close{
+      background: rgba(255,42,161,.16);
+      color: rgba(255,210,235,.95);
+      border: 1px solid rgba(255,42,161,.25);
+    }
+
+    canvas{ position:fixed; inset:0; pointer-events:none; }
+  </style>
+</head>
+<body>
+  <div class="sparkleGrid"></div>
+  <div class="floaters" id="floaters"></div>
+  <canvas id="confetti"></canvas>
+
+  <main class="wrap">
+    <header>
+      <div class="tag"><span class="dot"></span> for <b id="toName">my favorite person</b></div>
+      <div class="badgeRight">
+        <span style="opacity:.9">★</span>
+        <span id="dateText">Feb 14</span>
+        <span style="opacity:.6">•</span>
+        <span>made by <b id="fromName">you</b></span>
+      </div>
+    </header>
+
+    <section class="content">
+      <div>
+        <h1><span class="neon">will you be</span><br/>my valentine?</h1>
+        <p class="sub">
+          i like you in a way that feels like a song from 2010: loud, dramatic, and strangely perfect.
+        </p>
+
+        <div class="note">
+          <div>quick note:</div>
+          <div style="margin-top:6px">
+            <b id="line1">you + me</b> = a cute disaster (in the best way).
+          </div>
+          <div style="margin-top:6px; color: rgba(200,200,230,.92)">
+            click <b>yes</b> and i’ll plan something sweet. 🖤💗
+          </div>
+          <div class="tiny">
+            <span class="pill">★ eyeliner energy</span>
+            <span class="pill">♡ soft chaos</span>
+            <span class="pill">✦ scene glow</span>
+          </div>
+        </div>
+
+        <div class="actions" id="actions">
+          <button id="yesBtn">YES 🖤💗</button>
+          <button id="noBtn">NO 😅</button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="photo" id="photoBox">
+          <div>
+            drop a photo here later (optional)
+            <small>you can replace this box with an &lt;img&gt;</small>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; color: rgba(200,200,230,.9); line-height:1.6; font-size: 14px;">
+          Add your touch: a shared nickname, an inside joke, or a lyric (short).
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div>tip: host on GitHub Pages / Netlify in 2 minutes.</div>
+      <label class="toggle">
+        <input type="checkbox" id="musicToggle" />
+        play music
+      </label>
+    </footer>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modalCard">
+      <div class="big">🖤💗</div>
+      <h2>ok… i’m screaming (quietly).</h2>
+      <p id="modalText">
+        you just made my whole day. it’s official: you’re my valentine.
+      </p>
+      <button class="close" id="closeBtn">close</button>
+    </div>
+  </div>
+
+  <audio id="music" loop>
+    <!-- Optional: put an mp3 in the same folder and set src="song.mp3" -->
+    <source src="" type="audio/mpeg">
+  </audio>
+
+<script>
+  // EDIT THESE (personalization)
+  const HER_NAME = "my love";  // e.g. "Sofía"
+  const YOUR_NAME = "Jana";    // your name
+  const DATE_TEXT = "Feb 14";
+  const LINE_1 = "you + me";
+  const MODAL_TEXT = "you just made my whole day. it’s official: you’re my valentine.";
+
+  document.getElementById("toName").textContent = HER_NAME;
+  document.getElementById("fromName").textContent = YOUR_NAME;
+  document.getElementById("dateText").textContent = DATE_TEXT;
+  document.getElementById("line1").textContent = LINE_1;
+  document.getElementById("modalText").textContent = MODAL_TEXT;
+
+  // Floating emo-ish symbols
+  const floaters = document.getElementById("floaters");
+  const glyphs = ["★","✦","✧","♡","♥","🖤","💔","✩"];
+  for(let i=0;i<28;i++){
+    const el = document.createElement("div");
+    el.className = "floater";
+    el.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+    const left = Math.random()*100;
+    const size = 14 + Math.random()*22;
+    const dur = 7 + Math.random()*12;
+    const delay = Math.random()*-dur;
+
+    el.style.left = left + "vw";
+    el.style.top = (70 + Math.random()*50) + "vh";
+    el.style.fontSize = size + "px";
+    el.style.animationDuration = dur + "s";
+    el.style.animationDelay = delay + "s";
+    el.style.opacity = (0.25 + Math.random()*0.65).toFixed(2);
+    floaters.appendChild(el);
+  }
+
+  // No button that dodges (playful)
+  const noBtn = document.getElementById("noBtn");
+  const actions = document.getElementById("actions");
+  let tries = 0;
+
+  function moveNo(){
+    const box = actions.getBoundingClientRect();
+    const btn = noBtn.getBoundingClientRect();
+    const maxX = Math.max(0, box.width - btn.width);
+    const maxY = 90; // keep inside action area
+
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    noBtn.style.position = "absolute";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    tries++;
+    if(tries >= 7){
+      noBtn.textContent = "fine… YES 🖤";
+    }
+  }
+
+  noBtn.addEventListener("mouseenter", moveNo);
+  noBtn.addEventListener("click", () => {
+    if(tries >= 7){
+      document.getElementById("yesBtn").click();
+    } else {
+      moveNo();
+    }
+  });
+
+  // Modal + confetti
+  const modal = document.getElementById("modal");
+  document.getElementById("yesBtn").addEventListener("click", () => {
+    modal.classList.add("open");
+    launchConfetti();
+  });
+  document.getElementById("closeBtn").addEventListener("click", () => modal.classList.remove("open"));
+  modal.addEventListener("click", (e) => { if(e.target === modal) modal.classList.remove("open"); });
+
+  // Music toggle
+  const music = document.getElementById("music");
+  const toggle = document.getElementById("musicToggle");
+  toggle.addEventListener("change", async () => {
+    if(toggle.checked){
+      try{ await music.play(); } catch(e){ toggle.checked = false; }
+    } else music.pause();
+  });
+
+  // Confetti (pink/cyan “scene” vibe)
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  let pieces = [];
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function launchConfetti(){
+    pieces = [];
+    const n = 160;
+    for(let i=0;i<n;i++){
+      pieces.push({
+        x: Math.random()*canvas.width,
+        y: -20 - Math.random()*canvas.height*0.2,
+        s: 4 + Math.random()*7,
+        vx: -2 + Math.random()*4,
+        vy: 2 + Math.random()*6,
+        r: Math.random()*Math.PI,
+        vr: -0.25 + Math.random()*0.5,
+        a: 1,
+        c: Math.random() > 0.5 ? "rgba(255,42,161,.95)" : "rgba(57,245,255,.90)"
+      });
+    }
+    requestAnimationFrame(tick);
+    setTimeout(()=> pieces = [], 4200);
+  }
+
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const p of pieces){
+      p.x += p.vx;
+      p.y += p.vy;
+      p.r += p.vr;
+      p.a *= 0.995;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.a);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s);
+      ctx.restore();
+    }
+
+    pieces = pieces.filter(p => p.y < canvas.height + 40 && p.a > 0.05);
+    if(pieces.length) requestAnimationFrame(tick);
+  }
+</script>
+</body>
+</html>
